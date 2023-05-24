@@ -35,6 +35,59 @@ class SoundController:
         # set the state list
         self.states = [True for _ in self.states]
 
+    async def handle_message(self, index, type):
+        print(f"Current State : {self.states}")
+
+        backup_states = self.states.copy()
+        target_state = []
+
+        # steps, delta per step and current volume tracker
+        steps = self.fade_time_in_seconds / self.fade_time_intervals
+        delta = (self.high_volume - self.low_volume) / steps
+        current_vol = self.high_volume
+
+        if type == True:
+            # are all the clips on high
+            if False not in self.states:
+                # turn all but the index to low
+                target_state = [False for _ in self.states]
+                target_state[index] = True
+
+            else:
+                # turn index to high
+                target_state = self.states.copy()
+                target_state[index] = True
+        else:
+            backup_states[index] = False
+            # will all the clips be low if we turn off the index
+            if True not in backup_states:
+                # turn all clips to high
+                target_state = [True for _ in self.states]
+            else:
+                # turn index to low
+                target_state = self.states.copy()
+                target_state[index] = False
+
+        print(f"Target State : {target_state}")
+        # fade in by step
+        while current_vol > self.low_volume:
+            for i in range(len(self.sounds)):
+                if target_state[i]:
+                    # is the target state different from current state
+                    if target_state[i] != self.states[i]:
+                        self.sounds[i].set_volume(
+                            self.high_volume - (current_vol - delta)
+                        )
+                else:
+                    # is the target state different from current state
+                    if target_state[i] != self.states[i]:
+                        self.sounds[i].set_volume(current_vol - delta)
+
+            current_vol = current_vol - delta
+            await asyncio.sleep(0.1)
+
+        self.states = target_state
+
     # fades out every sound except the one represented by index in the sounds array
     # note that two sounds cannot be high at the same time
     # TODO : See if this behaviour needs to change

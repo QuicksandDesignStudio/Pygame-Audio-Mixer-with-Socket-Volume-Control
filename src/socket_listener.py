@@ -37,12 +37,15 @@ class SocketListener:
 
                 # is it a source:status formatted message
                 if source is not None and status is not None:
+                    await self.sound_controller.handle_message(int(source), status)
                     # if status is on, then spotlight the source index
+                    """
                     if status:
                         await self.sound_controller.fade_audio_spotlight(int(source))
                     # if the status is off then return all sounds to max volume
                     else:
                         await self.sound_controller.remove_audio_spotlight()
+                    """
             # handle error
             except OSError as e:
                 print("socket error : ", e)
