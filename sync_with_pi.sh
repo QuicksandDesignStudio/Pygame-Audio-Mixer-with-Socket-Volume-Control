@@ -1,1 +1,0 @@
-rsync -a --exclude ".DS_Store" src/ romit@raspberrypi.local:/home/romit/lbe_storyboard/
