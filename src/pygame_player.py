@@ -13,28 +13,11 @@ class SoundController:
         self.fade_time_in_seconds = 1  # Time taken to fade in and out
         self.fade_time_intervals = 0.1  # fade intervals. Total steps to fade = fade_time_in_seconds / fade_time_intervals
 
-    # removes all spotlights and sets the volumes of all clips to max
-    async def remove_audio_spotlight(self):
-        print(f"Current State : {self.states}")
-
-        # steps, delta per step and current volume tracker
-        steps = self.fade_time_in_seconds / self.fade_time_intervals
-        delta = (self.high_volume - self.low_volume) / steps
-        current_vol = self.low_volume
-
-        # fade in by step
-        while current_vol < self.high_volume:
-            for i in range(len(self.sounds)):
-                if not self.states[
-                    i
-                ]:  # only fade in those sounds which are not already high
-                    self.sounds[i].set_volume(current_vol + delta)
-            current_vol = current_vol + delta
-            await asyncio.sleep(self.fade_time_intervals)  # sleep for the fade interval
-
-        # set the state list
-        self.states = [True for _ in self.states]
-
+    # Handles a socket message and adjusts volumes of the sound clips
+    # If none of the sounds are low then an on messages sets all but the index to low -> spotlight
+    # If all the sounds except the index are low and the message is low then all sounds are set to high -> remove spotlight
+    # Otherwise turns on and off based on index and type
+    # For behviour where only one clip can be high at a time go to main branch in the repo
     async def handle_message(self, index, type):
         print(f"Current State : {self.states}")
 
@@ -87,36 +70,6 @@ class SoundController:
             await asyncio.sleep(0.1)
 
         self.states = target_state
-
-    # fades out every sound except the one represented by index in the sounds array
-    # note that two sounds cannot be high at the same time
-    # TODO : See if this behaviour needs to change
-    async def fade_audio_spotlight(self, index):
-        print(f"Current State : {self.states}")
-        print(f"Spotlighting clip : {index}")
-
-        # steps, delta per step and current volume tracker
-        steps = self.fade_time_in_seconds / self.fade_time_intervals
-        delta = (self.high_volume - self.low_volume) / steps
-        current_vol = self.high_volume
-
-        # fade in by step
-        while current_vol > self.low_volume:
-            for i in range(len(self.sounds)):
-                if i != index:  # all the sounds other than index
-                    if self.states[i]:  # all the sounds that are not already low
-                        self.sounds[i].set_volume(current_vol - delta)
-                else:  # index sounds
-                    if not self.states[i]:  # if index is not already high
-                        self.sounds[i].set_volume(
-                            self.high_volume - current_vol - delta
-                        )
-            current_vol = current_vol - delta
-            await asyncio.sleep(0.1)  # sleep for the fade interval
-
-        # set the state list
-        self.states = [False for _ in self.states]
-        self.states[index] = True
 
 
 # Control Audio Playback with Pygame Mixer
