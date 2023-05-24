@@ -5,4 +5,5 @@ venv/
 .DS_Store
 .vscode/*
 .vscode
-samples/*
+*.wav
+src/samples/
