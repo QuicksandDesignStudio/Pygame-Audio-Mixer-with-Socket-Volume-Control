@@ -2,6 +2,8 @@ import asyncio
 import glob
 import pygame
 
+from utils import reshape_sound_buffer_by_start_time, get_start_time
+
 
 # Control Audio Spotlighting with Volume Controls
 class SoundController:
@@ -102,9 +104,16 @@ class AudioPlayer:
             : self.max_channels
         ]  # drop those beyond the index of max_channels
 
-        self.sounds = [
-            pygame.mixer.Sound(file) for file in all_wave_files
-        ]  # create pygame mixer sound objects
+        for f in all_wave_files:
+            # Modify the sound buffer so the clips start at the required time
+            # Either random or a fixed time for all
+            # See utils.py for the function definition of reshape_sound_buffer_by_start_time
+            modifiedBuffer = reshape_sound_buffer_by_start_time(f, get_start_time())
+
+            # Load the modified buffers as Sounds into the mixer
+            # Note the buffers are loaded into memory
+            # Tested with Raspberyy Pi 3B+
+            self.sounds.append(pygame.mixer.Sound(modifiedBuffer))
 
     # Play the sounds simultaneously with looping
     def play_sounds(self):

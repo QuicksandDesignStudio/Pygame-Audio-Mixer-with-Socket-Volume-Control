@@ -1,4 +1,5 @@
 import socket
+import asyncio
 
 
 # Listen to socket messages and call the relevant sound controller methods
@@ -8,6 +9,7 @@ class SocketListener:
             "0.0.0.0"  # Use 0.0.0.0 to listen on all available network interfaces
         )
         self.port = 5000  # Listening port
+        self.timeout_in_seconds = 5  # Timeout for socket connection
         self.sound_controller = sound_controller  # The sound controller object
         self.loop = loop  # the async loop object
 
@@ -27,7 +29,9 @@ class SocketListener:
         while True:
             try:
                 # read data sent my socket
-                data = await self.loop.sock_recv(client_socket, 1024)
+                data = await asyncio.wait_for(
+                    self.loop.sock_recv(client_socket, 1024), self.timeout_in_seconds
+                )
                 # if no data break out and close the connection
                 if not data:
                     break
@@ -38,15 +42,13 @@ class SocketListener:
                 # is it a source:status formatted message
                 if source is not None and status is not None:
                     await self.sound_controller.handle_message(int(source), status)
-                    # if status is on, then spotlight the source index
-                    """
-                    if status:
-                        await self.sound_controller.fade_audio_spotlight(int(source))
-                    # if the status is off then return all sounds to max volume
-                    else:
-                        await self.sound_controller.remove_audio_spotlight()
-                    """
-            # handle error
+
+            # handle timeout error
+            except asyncio.TimeoutError:
+                print("Client connection timed out:", client_socket.getpeername())
+                break
+
+            # handle OS error
             except OSError as e:
                 print("socket error : ", e)
                 break

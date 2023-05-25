@@ -5,7 +5,7 @@ from pygame_player import AudioPlayer
 from pygame_player import SoundController
 from socket_listener import SocketListener
 
-RELATIVE_FOLDER_PATH = "samples"  # path to samples
+RELATIVE_FOLDER_PATH = "longsamples"  # path to samples
 FILE_TYPE_EXT = "wav"  # type of files
 
 
