@@ -113,6 +113,8 @@ class AudioPlayer:
             # Load the modified buffers as Sounds into the mixer
             # Note the buffers are loaded into memory
             # Tested with Raspberyy Pi 3B+
+            # Amazingly the the pygame.mixer.Sound() constructor takes in a numpy.ndarray array as a buffer
+            # How convenient is that!
             self.sounds.append(pygame.mixer.Sound(modifiedBuffer))
 
     # Play the sounds simultaneously with looping

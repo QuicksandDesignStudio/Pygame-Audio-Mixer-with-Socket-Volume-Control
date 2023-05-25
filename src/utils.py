@@ -9,6 +9,8 @@ random_range = (0, 150)
 
 # Reshape the sound buffer to start at the start_time
 # Take in file location and return the modified buffer
+# Note this returns a numpy array as a buffer, which works with pygame.mixer.Sound()
+# For other uses, convert it back to binary data
 def reshape_sound_buffer_by_start_time(file_location, start_time):
     with wave.open(file_location, "rb") as wav_file:
         # get the number of channels and the frame rate
