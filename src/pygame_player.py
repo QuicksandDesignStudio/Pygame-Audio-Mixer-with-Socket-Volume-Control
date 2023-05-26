@@ -21,19 +21,18 @@ class SoundController:
     # Otherwise turns on and off based on index and type
     # For behviour where only one clip can be high at a time go to main branch in the repo
     async def handle_message(self, sensor_state):
-        print(f"Current State : {self.states}")
-        print(f"Sensor State : {sensor_state}")
         target_state = self.states[:]  # copy
 
         # if all the sensors are off
         if True not in sensor_state:
-            # if there is one True state in current state
-            if self.states.count(True) == 1:
-                # target state should be all on
-                target_state = [True for _ in self.states]
+            # target state should be all on
+            target_state = [True for _ in self.states]
         else:
+            # target state should be the sensor state
             target_state = sensor_state[:]
 
+        print(f"Current State : {self.states}")
+        print(f"Sensor State : {sensor_state}")
         print(f"Target State : {target_state}")
 
         # steps, delta per step and current volume tracker
@@ -58,7 +57,7 @@ class SoundController:
             current_vol = current_vol - delta
             await asyncio.sleep(0.1)
 
-        self.states = target_state
+        self.states = target_state[:]
 
 
 # Control Audio Playback with Pygame Mixer
