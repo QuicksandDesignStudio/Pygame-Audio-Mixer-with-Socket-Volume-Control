@@ -20,40 +20,27 @@ class SoundController:
     # If all the sounds except the index are low and the message is low then all sounds are set to high -> remove spotlight
     # Otherwise turns on and off based on index and type
     # For behviour where only one clip can be high at a time go to main branch in the repo
-    async def handle_message(self, index, type):
+    async def handle_message(self, sensor_state):
         print(f"Current State : {self.states}")
+        print(f"Sensor State : {sensor_state}")
+        target_state = self.states[:]  # copy
 
-        backup_states = self.states.copy()
-        target_state = []
+        # if all the sensors are off
+        if True not in sensor_state:
+            # if there is one True state in current state
+            if self.states.count(True) == 1:
+                # target state should be all on
+                target_state = [True for _ in self.states]
+        else:
+            target_state = sensor_state[:]
+
+        print(f"Target State : {target_state}")
 
         # steps, delta per step and current volume tracker
         steps = self.fade_time_in_seconds / self.fade_time_intervals
         delta = (self.high_volume - self.low_volume) / steps
         current_vol = self.high_volume
 
-        if type == True:
-            # are all the clips on high
-            if False not in self.states:
-                # turn all but the index to low
-                target_state = [False for _ in self.states]
-                target_state[index] = True
-
-            else:
-                # turn index to high
-                target_state = self.states.copy()
-                target_state[index] = True
-        else:
-            backup_states[index] = False
-            # will all the clips be low if we turn off the index
-            if True not in backup_states:
-                # turn all clips to high
-                target_state = [True for _ in self.states]
-            else:
-                # turn index to low
-                target_state = self.states.copy()
-                target_state[index] = False
-
-        print(f"Target State : {target_state}")
         # fade in by step
         while current_vol > self.low_volume:
             for i in range(len(self.sounds)):

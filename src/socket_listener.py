@@ -12,16 +12,17 @@ class SocketListener:
         self.timeout_in_seconds = 5  # Timeout for socket connection
         self.sound_controller = sound_controller  # The sound controller object
         self.loop = loop  # the async loop object
+        self.number_of_sensors = 6  # the number of sensors
 
     # parese the message of the type source:status. For example 1:on or 1:off
     # returns the source and status
     def parse_message(self, message):
-        try:
-            source = message.split(":")[0]
-            status = True if message.split(":")[1] == "on" else False
-            return source, status
-        except:
-            return None, None
+        print(message)
+        disassembled_message = message.split(":")
+        if len(disassembled_message) != self.number_of_sensors:
+            return []
+        else:
+            return [True if x == "on" else False for x in disassembled_message]
 
     # handle a client and read the socket message
     async def handle_client(self, client_socket):
@@ -37,11 +38,11 @@ class SocketListener:
                     break
                 # get the source and status of the message
                 # only message of the format source:status will be acted upon
-                source, status = self.parse_message(data.decode())
+                sensor_state = self.parse_message(data.decode("utf-8"))
 
                 # is it a source:status formatted message
-                if source is not None and status is not None:
-                    await self.sound_controller.handle_message(int(source), status)
+                if len(sensor_state) == self.number_of_sensors:
+                    await self.sound_controller.handle_message(sensor_state)
 
             # handle timeout error
             except asyncio.TimeoutError:
