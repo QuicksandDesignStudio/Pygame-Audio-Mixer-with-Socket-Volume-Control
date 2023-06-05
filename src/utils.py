@@ -3,8 +3,8 @@ import wave
 import numpy as np
 
 is_random = True
-fixed_time_in_seconds = 150
-random_range = (0, 150)
+fixed_time_in_seconds = 15
+random_range = (0, 15)
 
 
 # Reshape the sound buffer to start at the start_time
