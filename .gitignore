@@ -10,3 +10,4 @@ src/samples/
 sync_with_pi.sh
 src/longsamples
 src/mp3
+*.sh
