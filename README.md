@@ -1,4 +1,4 @@
-# LBE Pygame Based Mixer. Volume control with UDP socket messages.
+# LBE Pygame Based Mixer. Volume control with UDP socket messages on Raspian
 
 ## Steps
 
