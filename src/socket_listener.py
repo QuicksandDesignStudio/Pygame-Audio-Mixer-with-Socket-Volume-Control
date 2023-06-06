@@ -1,5 +1,7 @@
+import datetime
 import socket
 import asyncio
+from db import save_sensor_record
 
 
 # Listen to socket messages and call the relevant sound controller methods
@@ -43,6 +45,8 @@ class SocketListener:
                 # is it a source:status formatted message
                 if len(sensor_state) == self.number_of_sensors:
                     await self.sound_controller.handle_message(sensor_state)
+                    # save to the db
+                    save_sensor_record(datetime.datetime.now(), data.decode("utf-8"))
 
             # handle timeout error
             except asyncio.TimeoutError:
