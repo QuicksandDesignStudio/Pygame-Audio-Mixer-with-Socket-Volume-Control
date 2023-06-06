@@ -8,3 +8,7 @@ venv/
 *.wav
 src/samples/
 sync_with_pi.sh
+src/sensor_database.db
+src/mp3/
+src/longsamples/
+needed.md
