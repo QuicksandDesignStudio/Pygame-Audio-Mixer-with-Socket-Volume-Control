@@ -21,3 +21,7 @@
 
 - This handles a track volume using socket messages
 - The load_sounds method of the AudioPlayer class uses the method reshape_sound_buffer_by_start_time in utils.py to seek to a specific time in the audio file before playing. There is no direct way to do this in pygame and play several sounds simultaneously so buffers are manually altered to do this.
+
+## Pending
+
+- Graceful shutdown of sockets
