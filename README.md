@@ -16,6 +16,7 @@
 - To use mp3 or ogg
   - sudo apt-get install libmpg123-dev
   - sudo apt-get install libvorbis-dev
+- python start.py
 
 ## Socket based audio handling and seeking to a time in the audio file
 
